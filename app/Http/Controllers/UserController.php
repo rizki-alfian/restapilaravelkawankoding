@@ -13,7 +13,7 @@ use Auth;
 class UserController extends Controller
 {
     //
-    public function users(User $user)
+    public function users(User $user) //menampilkan semua user tanpa mempunyai credentials
     {
         $users = $user->all();
         return fractal()
@@ -24,11 +24,23 @@ class UserController extends Controller
 
     public function profile(User $user)
     {
-        $user = $user->find(Auth::user()->id); //menampilkan user yg hanya mempunya api_token
+        $user = $user->find(Auth::user()->id); //menampilkan user sendiri dan mempunyai api_token
 
         return fractal()
         ->item($user)
         ->transformWith(new UserTransformer)
+        ->includePosts()
+        ->toArray();
+    }
+
+    public function profileById(User $user, $id)
+    {
+        $user = $user->find($id); //menampilkan user apa saja dan mempunyai credentials
+
+        return fractal()
+        ->item($user)
+        ->transformWith(new UserTransformer)
+        ->includePosts()
         ->toArray();
     }
 }
